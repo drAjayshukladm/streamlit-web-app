@@ -4,6 +4,51 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib.patches import Patch
 
+# Function to display the BMI Chart
+def bmi_chart(weight, height):
+    st.write("## BMI Chart Based on Weight and Height")
+
+    weights_kg = np.arange(40, 115, 5)
+    heights_cm = np.arange(140, 190, 5)
+    heights_m = heights_cm / 100
+
+    bmi_grid = np.zeros((len(heights_cm), len(weights_kg)))
+    for i, height in enumerate(heights_m):
+        bmi_grid[i, :] = weights_kg / (height ** 2)
+
+    categories = ['Underweight', 'Normal range', 'Overweight', 'Obese', 'Morbidly Obese']
+    colors = ['#ffffcc', '#ccebc5', '#ffedb3', '#fbb4ae', '#b3cde3']
+    cmap = ListedColormap(colors)
+    bounds = [0, 18.5, 23, 25, 30, 100]
+    norm = BoundaryNorm(bounds, cmap.N)
+
+    user_weight = weight
+    user_height_cm = height
+    user_height_m = user_height_cm / 100
+    user_bmi = user_weight / (user_height_m ** 2)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    c = ax.pcolormesh(weights_kg, heights_cm, bmi_grid, cmap=cmap, norm=norm, edgecolors='w', linewidth=1)
+
+    for i in range(len(heights_cm)):
+        for j in range(len(weights_kg)):
+            ax.text(weights_kg[j], heights_cm[i], f"{bmi_grid[i, j]:.1f}", va='center', ha='center', fontsize=8, color='black')
+
+    ax.plot(user_weight, user_height_cm, 'ro', markersize=10, label=f'Your BMI: {user_bmi:.1f}')
+    ax.legend(loc='upper right')
+
+    ax.set_xlabel('Weight (kg)')
+    ax.set_ylabel('Height (cm)')
+    ax.set_title('Body Mass Index (BMI) Chart')
+
+    ax.set_xticks(weights_kg)
+    ax.set_yticks(heights_cm)
+
+    legend_elements = [Patch(facecolor=color, edgecolor='w', label=category) for category, color in zip(categories, colors)]
+    ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+
+    st.pyplot(fig)
+
 # Main function for the app
 def main():
     st.title("DRI and RDA Calculator for Adults")
@@ -93,49 +138,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# Function to display the BMI Chart
-def bmi_chart(weight, height):
-    st.write("## BMI Chart Based on Weight and Height")
-
-    weights_kg = np.arange(40, 115, 5)
-    heights_cm = np.arange(140, 190, 5)
-    heights_m = heights_cm / 100
-
-    bmi_grid = np.zeros((len(heights_cm), len(weights_kg)))
-    for i, height in enumerate(heights_m):
-        bmi_grid[i, :] = weights_kg / (height ** 2)
-
-    categories = ['Underweight', 'Normal range', 'Overweight', 'Obese', 'Morbidly Obese']
-    colors = ['#ffffcc', '#ccebc5', '#ffedb3', '#fbb4ae', '#b3cde3']
-    cmap = ListedColormap(colors)
-    bounds = [0, 18.5, 23, 25, 30, 100]
-    norm = BoundaryNorm(bounds, cmap.N)
-
-    user_weight = weight
-    user_height_cm = height
-    user_height_m = user_height_cm / 100
-    user_bmi = user_weight / (user_height_m ** 2)
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    c = ax.pcolormesh(weights_kg, heights_cm, bmi_grid, cmap=cmap, norm=norm, edgecolors='w', linewidth=1)
-
-    for i in range(len(heights_cm)):
-        for j in range(len(weights_kg)):
-            ax.text(weights_kg[j], heights_cm[i], f"{bmi_grid[i, j]:.1f}", va='center', ha='center', fontsize=8, color='black')
-
-    ax.plot(user_weight, user_height_cm, 'ro', markersize=10, label=f'Your BMI: {user_bmi:.1f}')
-    ax.legend(loc='upper right')
-
-    ax.set_xlabel('Weight (kg)')
-    ax.set_ylabel('Height (cm)')
-    ax.set_title('Body Mass Index (BMI) Chart')
-
-    ax.set_xticks(weights_kg)
-    ax.set_yticks(heights_cm)
-
-    legend_elements = [Patch(facecolor=color, edgecolor='w', label=category) for category, color in zip(categories, colors)]
-    ax.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
-
-    st.pyplot(fig)
