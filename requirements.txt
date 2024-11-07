@@ -1,4 +1,8 @@
 streamlit
 streamlit-authenticator
+git add requirements.txt
+git commit -m "Add streamlit-authenticator to requirements"
+git push
+
 matplotlib
 numpy
