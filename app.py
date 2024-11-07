@@ -18,9 +18,8 @@ password = st.text_input("Password", type="password")
 if st.button("Login"):
     if username in users and users[username] == password:
         st.success("Login successful!")
-        # Display app content
         st.write("Welcome to the app!")
-        
+
         # Define the diabetes distress categories
         categories = [
     'Feeling that I am not as skilled at managing diabetes as I should be.',
@@ -52,13 +51,15 @@ if st.button("Login"):
     'Feeling that I can’t ever be safe from the possibility of a serious hypoglycemic event.',
     'Feeling that I don’t give my diabetes as much attention as I probably should.'
 ]
+        # Initialize responses in session state
+        if "responses" not in st.session_state:
+            st.session_state.responses = [1] * len(categories)
         
-
         # Collect responses for each question
         responses = []
         for i, question in enumerate(categories, start=1):
-            rating = st.slider(f"{i}. {question}", 1, 6)
-            responses.append(rating)
+            st.session_state.responses[i-1] = st.slider(f"{i}. {question}", 1, 6, key=f"slider_{i}")
+            responses.append(st.session_state.responses[i-1])
 
         # Calculate the average score and display it
         if st.button("Calculate Distress Scores"):
@@ -93,32 +94,18 @@ if st.button("Login"):
                 if score > 2:
                     st.write(f"{subscale_name} score > 2.0 is considered clinically significant.")
 
-            # Recommendations based on subscale scores
-            st.header("Personalized Recommendations")
-            recommendations = {
-                "Powerlessness": "Consider speaking to a counselor or joining a support group...",
-                "Management Distress": "Review your diabetes management plan with a healthcare provider...",
-                # Add other subscale recommendations here
-            }
-
-            for subscale_name, items in subscales.items():
-                score = sum(items) / len(items)
-                if score > 2:
-                    st.write(f"Recommendation for {subscale_name}:")
-                    st.write(recommendations[subscale_name])
-
             # Radar chart
             N = len(subscales)
             angles = [n / float(N) * 2 * np.pi for n in range(N)]
             angles += angles[:1]
-            scores += scores[:1]  # Closing the loop
+            scores += scores[:1]
 
             fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
             ax.plot(angles, scores, 'o-', linewidth=2)
             ax.fill(angles, scores, alpha=0.25)
             ax.set_thetagrids(np.degrees(angles[:-1]), list(subscales.keys()))
             ax.set_ylim(0, 6)
-            st.pyplot(fig)
+            st.pyplot(fig, clear_figure=True)
 
             # Save responses to CSV
             if st.button("Download Responses"):
