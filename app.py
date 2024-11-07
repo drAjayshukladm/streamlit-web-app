@@ -1,123 +1,63 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
-# Simple hard-coded credentials
-users = {
-    "8462866656": "max",
-    "8400275050": "max2",
-    # Add more users as needed
-}
+# Define weight (in kg) and height (in cm) ranges
+weights_kg = np.arange(40, 115, 5)  # 40 to 110 kg in steps of 5
+heights_cm = np.arange(140, 190, 5)  # 140 to 185 cm in steps of 5
 
-# Login
-st.title("Login")
-username = st.text_input("Username")
-password = st.text_input("Password", type="password")
+# Convert height to meters
+heights_m = heights_cm / 100
 
-if st.button("Login"):
-    if username in users and users[username] == password:
-        st.success("Login successful!")
-        st.write("Welcome to the app!")
+# Create a BMI grid
+bmi_grid = np.zeros((len(heights_cm), len(weights_kg)))
 
-        # Define the diabetes distress categories
-        categories = [
-    'Feeling that I am not as skilled at managing diabetes as I should be.',
-    'Feeling that I don’t eat as carefully as I probably should.',
-    'Feeling that I don’t notice the warning signs of hypoglycemia as well as I used to.',
-    'Feeling that people treat me differently when they find out I have diabetes.',
-    'Feeling discouraged when I see high blood glucose numbers that I can’t explain.',
-    'Feeling that my family and friends make a bigger deal out of diabetes than they should.',
-    'Feeling that I can’t tell my diabetes doctor what is really on my mind.',
-    'Feeling that I am not taking as much insulin as I should.',
-    'Feeling that there is too much diabetes equipment and stuff I must always have with me.',
-    'Feeling like I have to hide my diabetes from other people.',
-    'Feeling that my friends and family worry more about hypoglycemia than I want them to.',
-    'Feeling that I don’t check my blood glucose level as often as I probably should.',
-    'Feeling worried that I will develop serious long-term complications, no matter how hard I try.',
-    'Feeling that I don’t get help I really need from my diabetes doctor about managing diabetes.',
-    'Feeling frightened that I could have a serious hypoglycemic event when I’m asleep.',
-    'Feeling that thoughts about food and eating control my life.',
-    'Feeling that my friends or family treat me as if I were more fragile or sicker than I really am.',
-    'Feeling that my diabetes doctor doesn\'t really understand what it\'s like to have diabetes.',
-    'Feeling concerned that diabetes may make me less attractive to employers.',
-    'Feeling that my friends or family act like “diabetes police” (bother me too much).',
-    'Feeling that I’ve got to be perfect with my diabetes management.',
-    'Feeling frightened that I could have a serious hypoglycemic event while driving.',
-    'Feeling that my eating is out of control.',
-    'Feeling that people will think less of me if they knew I had diabetes.',
-    'Feeling that no matter how hard I try with my diabetes, it will never be good enough.',
-    'Feeling that my diabetes doctor doesn\'t know enough about diabetes and diabetes care.',
-    'Feeling that I can’t ever be safe from the possibility of a serious hypoglycemic event.',
-    'Feeling that I don’t give my diabetes as much attention as I probably should.'
-]
-        # Initialize responses in session state
-        if "responses" not in st.session_state:
-            st.session_state.responses = [1] * len(categories)
-        
-        # Collect responses for each question
-        responses = []
-        for i, question in enumerate(categories, start=1):
-            st.session_state.responses[i-1] = st.slider(f"{i}. {question}", 1, 6, key=f"slider_{i}")
-            responses.append(st.session_state.responses[i-1])
+for i, height in enumerate(heights_m):
+    bmi_grid[i, :] = weights_kg / (height ** 2)
 
-        # Calculate the average score and display it
-        if st.button("Calculate Distress Scores"):
-            score28 = sum(responses) / len(responses)
-            st.write(f"Average T1-DDS score of 28 questions is {score28:.2f}")
+# Define BMI categories and lighter colors for better readability
+categories = ['Underweight', 'Normal range', 'Overweight', 'Obese', 'Morbidly Obese']
+colors = ['#ffffcc', '#ccebc5', '#ffedb3', '#fbb4ae', '#b3cde3']  # Lighter colors
+cmap = ListedColormap(colors)
+bounds = [0, 18.5, 23, 25, 30, 100]
+norm = BoundaryNorm(bounds, cmap.N)
 
-            # Determine distress level
-            if score28 < 2:
-                st.write("Indicates little or no distress, as this score is less than 2.")
-            elif 2 <= score28 < 3:
-                st.write("Indicates moderate distress, as the average score is between 2.0 and 2.9.")
-            else:
-                st.write("Indicates high distress, as the average score is greater than 3.0.")
+# Create the figure and axis
+fig, ax = plt.subplots(figsize=(12, 6))
 
-            # Subscale calculations
-            subscales = {
-                "Powerlessness": [responses[4], responses[8], responses[12], responses[20], responses[24]],
-                "Management Distress": [responses[0], responses[7], responses[11], responses[27]],
-                "Hypoglycemia Distress": [responses[2], responses[14], responses[21], responses[26]],
-                "Negative Social Perceptions": [responses[3], responses[9], responses[18], responses[23]],
-                "Eating Distress": [responses[1], responses[15], responses[22]],
-                "Physician Distress": [responses[6], responses[13], responses[17], responses[25]],
-                "Friend/Family Distress": [responses[5], responses[10], responses[16], responses[19]]
-            }
+# Plot the BMI grid as a table
+c = ax.pcolormesh(weights_kg, heights_cm, bmi_grid, cmap=cmap, norm=norm, edgecolors='w', linewidth=1)
 
-            # Display subscale scores
-            scores = []
-            for subscale_name, items in subscales.items():
-                score = sum(items) / len(items)
-                scores.append(score)
-                st.write(f"{subscale_name} score: {score:.2f} out of max score 6")
-                if score > 2:
-                    st.write(f"{subscale_name} score > 2.0 is considered clinically significant.")
+# Add text to each cell with improved visibility
+for i in range(len(heights_cm)):
+    for j in range(len(weights_kg)):
+        ax.text(weights_kg[j], heights_cm[i], f"{bmi_grid[i, j]:.1f}", va='center', ha='center', fontsize=8, color='black')
 
-            # Radar chart
-            N = len(subscales)
-            angles = [n / float(N) * 2 * np.pi for n in range(N)]
-            angles += angles[:1]
-            scores += scores[:1]
+# Ask user for their weight and height
+user_weight = float(input("Enter your weight in kg: "))
+user_height_cm = float(input("Enter your height in cm: "))
+user_height_m = user_height_cm / 100
 
-            fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
-            ax.plot(angles, scores, 'o-', linewidth=2)
-            ax.fill(angles, scores, alpha=0.25)
-            ax.set_thetagrids(np.degrees(angles[:-1]), list(subscales.keys()))
-            ax.set_ylim(0, 6)
-            st.pyplot(fig, clear_figure=True)
+# Calculate user's BMI
+user_bmi = user_weight / (user_height_m ** 2)
 
-            # Save responses to CSV
-            if st.button("Download Responses"):
-                response_data = pd.DataFrame({
-                    "Question": categories,
-                    "Rating": responses
-                })
-                st.download_button(
-                    label="Download Responses as CSV",
-                    data=response_data.to_csv(index=False),
-                    file_name="distress_responses.csv",
-                    mime="text/csv"
-                )
-    else:
-        st.error("Invalid username or password")
+# Plot user's BMI on the chart
+ax.plot(user_weight, user_height_cm, 'ro', markersize=10, label=f'Your BMI: {user_bmi:.1f}')
+ax.legend(loc='upper right')
+
+# Set axis labels and title
+ax.set_xlabel('Weight (kg)')
+ax.set_ylabel('Height (cm)')
+ax.set_title('Body Mass Index (BMI) Chart')
+
+# Customize ticks
+ax.set_xticks(weights_kg)
+ax.set_yticks(heights_cm)
+
+# Create a custom legend with lighter colors
+from matplotlib.patches import Patch
+legend_elements = [Patch(facecolor=color, edgecolor='w', label=category) for category, color in zip(categories, colors)]
+plt.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+
+plt.show()
