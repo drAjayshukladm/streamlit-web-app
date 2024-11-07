@@ -135,3 +135,36 @@ if st.button("Calculate Distress Scores"):
     plt.suptitle("Pie Charts Showing Proportion of Distress Level in Each Subscale", size=16)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     st.pyplot(fig)
+# Recommendations based on subscale scores
+st.header("Personalized Recommendations")
+
+recommendations = {
+    "Powerlessness": "Consider speaking to a counselor or joining a support group. They can help in overcoming feelings of powerlessness and finding positive coping mechanisms.",
+    "Management Distress": "Review your diabetes management plan with a healthcare provider. Adjustments may help reduce the distress related to diabetes management.",
+    "Hypoglycemia Distress": "Consider continuous glucose monitoring if available, and discuss with your doctor about strategies to manage hypoglycemia concerns.",
+    "Negative Social Perceptions": "Focus on educating those around you about diabetes to reduce social distress. Consider discussing with friends and family how their perceptions affect you.",
+    "Eating Distress": "Consult a dietitian for a personalized diet plan that feels manageable and reduces stress around food.",
+    "Physician Distress": "If you feel misunderstood by your doctor, consider preparing specific questions or seeking a second opinion to address your needs.",
+    "Friend/Family Distress": "Communicate openly with friends and family about the support you need. Educating them can reduce misunderstandings and increase effective support."
+}
+
+for subscale_name, items in subscales.items():
+    score = sum(items) / len(items)
+    if score > 2:
+        st.write(f"Recommendation for {subscale_name}:")
+        st.write(recommendations[subscale_name])
+import pandas as pd
+
+# Save responses to CSV
+if st.button("Download Responses"):
+    response_data = pd.DataFrame({
+        "Question": categories,
+        "Rating": responses
+    })
+    response_data.to_csv("distress_responses.csv", index=False)
+    st.download_button(
+        label="Download Responses as CSV",
+        data=response_data.to_csv(index=False),
+        file_name="distress_responses.csv",
+        mime="text/csv"
+    )
