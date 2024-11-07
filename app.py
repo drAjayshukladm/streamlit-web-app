@@ -2,6 +2,27 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+# Simple hard-coded credentials
+users = {
+    "8462866656": "max",
+    "8400275050": "max2",
+    # Add more users as needed
+}
+
+# Login
+st.title("Login")
+username = st.text_input("Username")
+password = st.text_input("Password", type="password")
+
+if st.button("Login"):
+    if username in users and users[username] == password:
+        st.success("Login successful!")
+        # Display app content
+        st.write("Welcome to the app!")
+    else:
+        st.error("Invalid username or password")
+
 # Define the diabetes distress categories
 categories = [
     'Feeling that I am not as skilled at managing diabetes as I should be.',
