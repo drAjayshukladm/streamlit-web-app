@@ -22,10 +22,8 @@ def bmi_chart():
     bounds = [0, 18.5, 23, 25, 30, 100]
     norm = BoundaryNorm(bounds, cmap.N)
 
-    user_weight = weight
-    #st.number_input("Enter your weight (kg):", min_value=30.0, max_value=150.0, step=0.1)
-    user_height_cm =height
-    #st.number_input("Enter your height (cm):", min_value=120.0, max_value=220.0, step=0.1)
+    user_weight = st.number_input("Enter your weight (kg):", min_value=30.0, max_value=150.0, step=0.1)
+    user_height_cm =st.number_input("Enter your height (cm):", min_value=120.0, max_value=220.0, step=0.1)
     user_height_m = user_height_cm / 100
     user_bmi = user_weight / (user_height_m ** 2)
 
