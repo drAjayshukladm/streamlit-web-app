@@ -7,8 +7,34 @@ categories = [
     'Feeling that I am not as skilled at managing diabetes as I should be.',
     'Feeling that I don’t eat as carefully as I probably should.',
     'Feeling that I don’t notice the warning signs of hypoglycemia as well as I used to.',
-    # Add all other questions here...
+    'Feeling that people treat me differently when they find out I have diabetes.',
+    'Feeling discouraged when I see high blood glucose numbers that I can’t explain.',
+    'Feeling that my family and friends make a bigger deal out of diabetes than they should.',
+    'Feeling that I can’t tell my diabetes doctor what is really on my mind.',
+    'Feeling that I am not taking as much insulin as I should.',
+    'Feeling that there is too much diabetes equipment and stuff I must always have with me.',
+    'Feeling like I have to hide my diabetes from other people.',
+    'Feeling that my friends and family worry more about hypoglycemia than I want them to.',
+    'Feeling that I don’t check my blood glucose level as often as I probably should.',
+    'Feeling worried that I will develop serious long-term complications, no matter how hard I try.',
+    'Feeling that I don’t get help I really need from my diabetes doctor about managing diabetes.',
+    'Feeling frightened that I could have a serious hypoglycemic event when I’m asleep.',
+    'Feeling that thoughts about food and eating control my life.',
+    'Feeling that my friends or family treat me as if I were more fragile or sicker than I really am.',
+    'Feeling that my diabetes doctor doesn\'t really understand what it\'s like to have diabetes.',
+    'Feeling concerned that diabetes may make me less attractive to employers.',
+    'Feeling that my friends or family act like “diabetes police” (bother me too much).',
+    'Feeling that I’ve got to be perfect with my diabetes management.',
+    'Feeling frightened that I could have a serious hypoglycemic event while driving.',
+    'Feeling that my eating is out of control.',
+    'Feeling that people will think less of me if they knew I had diabetes.',
+    'Feeling that no matter how hard I try with my diabetes, it will never be good enough.',
+    'Feeling that my diabetes doctor doesn\'t know enough about diabetes and diabetes care.',
+    'Feeling that I can’t ever be safe from the possibility of a serious hypoglycemic event.',
+    'Feeling that I don’t give my diabetes as much attention as I probably should.'
 ]
+
+
 
 # Streamlit interface title and description
 st.title("Diabetes Distress Assessment")
